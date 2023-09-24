@@ -1,4 +1,5 @@
 import discord
+import json
 from config import TOKEN
 from filter import filter_content
 
@@ -12,6 +13,16 @@ intents.members = True
 class MyClient(discord.Client):
     async def on_ready(self):
         print("Language Filter Bot is ready.")
+        await self.on_load()
+
+    async def on_load(self):
+        global WARNINGS
+        # Load data from a JSON file into a Python dictionary
+        try:
+            with open('data.json', 'r') as file:
+                WARNINGS = json.load(file)
+        except:
+            print("Error. Data file is not found.")
 
     async def on_message(self, message):
         userID = str(message.author.id)
@@ -50,6 +61,12 @@ class MyClient(discord.Client):
                 # Handle missing permissions exception
                 print(f"Permission error: {e}")
                 await send("I don't have the necessary permissions to delete this message.")
+
+            json_string = json.dumps(WARNINGS) # # Serialize the dictionary to a JSON string
+
+            # Save the JSON to file
+            with open('data.json', 'w') as file:
+                file.write(json_string)
 
 client = MyClient(intents = intents)
 client.run(TOKEN)
