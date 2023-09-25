@@ -50,11 +50,13 @@ class MyClient(discord.Client):
                 WARNINGS[userID] = 1
             else:
                 WARNINGS[userID] += 1
+
             # Let users know their total warning counts
+            warning_text = f"Hello <@{userID}>, You currently have "
             if WARNINGS[userID] == 1:
-                await message.reply(f"Hello <@{userID}>, You currently have 1 warning.")
+                await message.reply(warning_text + "1 warning.")
             else:
-                await message.reply(f"Hello <@{userID}>, You currently have {WARNINGS[userID]} warnings.")
+                await message.reply(warning_text + f"{WARNINGS[userID]} warnings.")
             try:
                 await message.delete() # Delete the inappropriate message
             except discord.Forbidden as e:
@@ -62,7 +64,7 @@ class MyClient(discord.Client):
                 print(f"Permission error: {e}")
                 await send("I don't have the necessary permissions to delete this message.")
 
-            json_string = json.dumps(WARNINGS) # # Serialize the dictionary to a JSON string
+            json_string = json.dumps(WARNINGS) # Serialize the dictionary to a JSON string
 
             # Save the JSON to file
             with open('data.json', 'w') as file:
